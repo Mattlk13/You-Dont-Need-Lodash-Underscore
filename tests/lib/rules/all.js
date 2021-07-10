@@ -8,7 +8,7 @@ const ruleTester = new RuleTester({
   parserOptions: { ecmaVersion: 2018, sourceType: "module" }
 });
 
-// Only a couple of smoke tests because otherwise it would get very reduntant
+// Only a couple of smoke tests because otherwise it would get very redundant
 
 ruleTester.run('_.concat', rules.concat, {
   valid: [
@@ -53,6 +53,30 @@ ruleTester.run(`Import lodash.isnan`, rules['is-nan'], {
   }, {
     code: `require('lodash.isnan');`,
     errors: [`require('lodash.isnan') detected. Consider using the native Number.isNaN()`]
+  }]
+});
+
+ruleTester.run(`Import { isNaN } from lodash-es`, rules['is-nan'], {
+  valid: [`{ x: require('lodash-es') }`],
+  invalid: [{
+    code: `import { isNaN } from 'lodash-es';`,
+    errors: [`Import { isNaN } from 'lodash-es' detected. Consider using the native Number.isNaN()`]
+  },
+    {
+    code: `import isNaN from 'lodash-es/isNaN';`,
+    errors: [`Import from 'lodash-es/isNaN' detected. Consider using the native Number.isNaN()`]
+  }, {
+    code: `import { isNaN as x } from 'lodash-es';`,
+    errors: [`Import { isNaN } from 'lodash-es' detected. Consider using the native Number.isNaN()`]
+  }, {
+    code: `const { isNaN: x } = require('lodash-es');`,
+    errors: [`{ isNaN } = require('lodash-es') detected. Consider using the native Number.isNaN()`]
+  }, {
+    code: `({ isNaN: x } = require('lodash-es'));`,
+    errors: [`{ isNaN } = require('lodash-es') detected. Consider using the native Number.isNaN()`]
+  }, {
+    code: `require('lodash-es/isNaN');`,
+    errors: [`require('lodash-es/isNaN') detected. Consider using the native Number.isNaN()`]
   }]
 });
 
@@ -126,7 +150,7 @@ ruleTester.run('_.isUndefined', rules['is-undefined'], {
   }]
 });
 
-/*This is to make sure that You-Dont-Need-Lodash can handle the 
+/*This is to make sure that You-Dont-Need-Lodash can handle the
 evaluation of nested functions that had caused an error noted in the comments of
 Pull Request #219*/
 ruleTester.run('Nested functions', rules['is-undefined'], {

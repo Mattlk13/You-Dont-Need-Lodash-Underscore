@@ -15,8 +15,8 @@ describe('code snippet example', () => {
     const lodashArray = [1]
     const lodashResult = _.concat(lodashArray, 2, [3], [[4]])
 
-    const nativehArray = [1]
-    const nativeResult = nativehArray.concat(2, [3], [[4]])
+    const nativeArray = [1]
+    const nativeResult = nativeArray.concat(2, [3], [[4]])
 
     assert.deepEqual(lodashResult, nativeResult)
   })
@@ -39,11 +39,11 @@ describe('code snippet example', () => {
   })
 
   it('pickBy', () => {
-    var object = { 'a': 1, 'b': null, 'c': 3, 'd': false, 'e': undefined };
+    var object = { 'a': 1, 'b': null, 'c': 3, 'd': false, 'e': undefined, 'f': '', 'g': 0 };
     function pickBy(object) {
       const obj = {};
       for (const key in object) {
-        if (object[key] !== null && object[key] !== false && object[key] !== undefined) {
+        if (object[key]) {
           obj[key] = object[key];
         }
       }
@@ -148,12 +148,19 @@ describe('code snippet example', () => {
     }
     Foo.prototype.d = 4;
     Bar.prototype.f = 6;
+
     const extend = (target, ...sources) => {
-      let source = [];
-      sources.forEach(src => {
-        source = source.concat([src, Object.getPrototypeOf(src)])
-      })
-      return Object.assign(target, ...source)
+      const length = sources.length;
+
+      if (length < 1 || target == null) return target;
+      for (let i = 0; i < length; i++) {
+        const source = sources[i];
+
+        for (const key in source) {
+          target[key] = source[key];
+        }
+      }
+      return target;
     };
 
     it("_.extend({}, new Foo, new Bar);", () => {
@@ -248,7 +255,7 @@ describe('code snippet example', () => {
       "kk.ll": { "mm.n": [3, 4, { "oo.p": 5 }] }
     };
 
-    it ("should handle falsey values", () => {
+    it ("should handle falsy values", () => {
       var val = _.get(obj, 'aa[0].b.c', 1)
       assert.strictEqual(val, get(obj, 'aa[0].b.c', 1))
       assert.notEqual(val, 1)
@@ -347,49 +354,49 @@ describe('code snippet example', () => {
       }
       return (num >= Math.min(init, final) && num < Math.max(init, final));
     }
-    
+
     it('_.inRange(3, 2, 4)', () => {
       assert.equal(
         _.inRange(3, 2, 4),
         inRange(3, 2, 4)
       )
     });
- 
+
     it('_.inRange(4, 8)', () => {
       assert.equal(
         _.inRange(4, 8),
         inRange(4, 8)
       )
     });
-    
+
     it('_.inRange(4, 2)', () => {
       assert.equal(
         _.inRange(4, 2),
         inRange(4, 2)
       )
     });
-    
+
     it('_.inRange(2, 2)', () => {
       assert.equal(
         _.inRange(2, 2),
         inRange(2, 2)
       )
     });
-    
+
     it('_.inRange(1.2, 2)', () => {
       assert.equal(
         _.inRange(1.2, 2),
         inRange(1.2, 2)
       )
     });
-    
+
     it('_.inRange(5.2, 4)', () => {
       assert.equal(
         _.inRange(5.2, 4),
         inRange(5.2, 4)
       )
     });
-    
+
     it('_.inRange(-3, -2, -6)', () => {
       assert.equal(
         _.inRange(-3, -2, -6),
@@ -567,7 +574,29 @@ describe('code snippet example', () => {
       assert.deepStrictEqual(randoms, [100000, 100001]);
     });
   });
-  
+
+  describe('clamp', () => {
+    const clamp = (number, boundOne, boundTwo) => {
+      if (!boundTwo) {
+        return Math.max(number, boundOne) === boundOne ? number : boundOne;
+      } else if (Math.min(number, boundOne) === number) {
+        return boundOne;
+      } else if (Math.max(number, boundTwo) === number) {
+        return boundTwo;
+      }
+      return number;
+    };
+    it('clamp(-10, -5, 5) returns lower bound if number is less than it', () => {
+      assert.deepStrictEqual(clamp(-10, -5, 5), -5);
+    });
+    it('clamp(10, -5, 5) returns upper bound if number is greater than it', () => {
+      assert.deepStrictEqual(clamp(10, -5, 5), 5);
+    });
+    it('clamp(10, -5) treats second parameter as upper bound', () => {
+      assert.deepStrictEqual(clamp(10, -5), -5);
+    });
+  });
+
   describe('padStart', () => {
     it('_.padStart("123", 5, "0")', () => {
       assert.equal(
@@ -627,10 +656,34 @@ describe('code snippet example', () => {
     })
   })
 
+
+
+  describe('isString', () => {
+    function isString(str) {
+      if (str && typeof str.valueOf() === "string") {
+        return true
+      }
+      return false
+    }
+
+    it('_.isString(abc)', () => {
+      assert.deepEqual(_.isString("abc"),
+        isString("abc"))
+    });
+
+    it('_.isString(1)', () => {
+      assert.deepEqual(_.isString(1),
+        isString(1))
+    });
+
+
+  });
+
+
   describe('isUndefined', () => {
     const definedVariable = 1; //defined variable (will return false)
     let undefinedVariable; //undefined variable (will return true)
-    
+
     it('_.isUndefined(definedVariable)', () => {
       assert.equal(_.isUndefined(definedVariable),
         (definedVariable === undefined))
@@ -672,7 +725,7 @@ describe('code snippet example', () => {
   describe('forEach', () => {
     it('_.forEach(array)', () => {
       const testArray = [1,2,3,4];
-      
+
       let lodashOutput = []
       let nativeOutput = []
 
@@ -774,4 +827,71 @@ describe('code snippet example', () => {
       assert.equal(callCount, 1);
     });
   })
+
+  describe('isFunction', () => {
+    function isFunction(func) {
+      return (func && typeof func === "function")
+    }
+
+    it('_.isFunction(setTimeout)', () => {
+      assert.deepEqual(_.isFunction(setTimeout),
+        isFunction(setTimeout))
+    });
+
+    it('_.isFunction(1)', () => {
+      assert.deepEqual(_.isFunction(1),
+        isFunction(1))
+    });
+
+    it('_.isFunction(abc)', () => {
+      assert.deepEqual(_.isFunction("abc"),
+        isFunction("abc"))
+    });
+
+  });
+
+  describe('unionBy', () => {
+    function unionBy(...arrays) {
+      const iteratee = (arrays).pop();
+
+      if (Array.isArray(iteratee)) {
+        return []; // return empty if iteratee is missing
+      }
+
+      return [...arrays].flat().filter(
+        (set => (o) => set.has(iteratee(o)) ? false : set.add(iteratee(o)))(new Set()),
+      );
+    };
+
+    it('should take an iteratee function', () => {
+      assert.deepStrictEqual(_.unionBy([2.1], [1.2, 2.3], Math.floor), unionBy([2.1], [1.2, 2.3], Math.floor));
+    });
+
+    it('should output values from the first possible array', () => {
+      assert.deepStrictEqual(_.unionBy([{ x: 1, y: 1 }], [{ x: 1, y: 2 }], (x) => x.x),
+        unionBy([{ x: 1, y: 1 }], [{ x: 1, y: 2 }], (x) => x.x));
+    });
+  });
+
+  describe('capitalize', () => {
+    function capitalize(string) {
+      return string ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase() : '';
+    }
+
+    it('_.capitalize("FRED")', () => {
+      assert.deepStrictEqual(_.capitalize("FRED"), capitalize("FRED"));
+    });
+
+    it('_.capitalize("fred")', () => {
+      assert.deepStrictEqual(_.capitalize("fred"), capitalize("fred"));
+    });
+
+    it('_.capitalize("HELLO WORLD")', () => {
+      assert.deepStrictEqual(_.capitalize("HELLO WORLD"), capitalize("HELLO WORLD"));
+    });
+
+    it('_.capitalize("hello world")', () => {
+      assert.deepStrictEqual(_.capitalize("hello world"), capitalize("hello world"));
+    });
+  });
 });

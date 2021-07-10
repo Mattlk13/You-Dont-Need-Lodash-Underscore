@@ -1,4 +1,4 @@
-# You don't (may not) need Lodash/Underscore 
+# [You don't (may not) need Lodash/Underscore](https://you-dont-need.github.io/You-Dont-Need-Lodash-Underscore/#/) 
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/you-dont-need/lodash-underscore)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cht8687/You-Dont-Need-Lodash-Underscore)
 
@@ -8,7 +8,7 @@ You are welcome to contribute with more items provided below.
 
 * If you are targeting legacy JavaScript engine with those ES5 methods, you can use [es5-shim](https://github.com/es-shims/es5-shim)
 
-* Please note that, the examples used below are just showing you the native alternative of performing certain tasks. For some of the functions, Lodash provides you more options than native built-ins. This list is not a 1:1 comparison.
+* Please note that, the examples used below are just showing you the native alternative of performing certain tasks. For some functions, Lodash provides you more options than native built-ins. This list is not a 1:1 comparison.
 
 * Please send a PR if you want to add or modify the code. No need to open an issue unless it's something big and you want to discuss.
 
@@ -111,12 +111,17 @@ suggest that you take extra precautions [e.g. consider using the native Object.k
 1. [_.reverse](#_reverse)
 1. [_.slice](#_slice)
 1. [_.without](#_without)
+1. [_.initial](#_initial)
+1. [_.pull](#_pull)
+1. [_.unionBy](#_unionBy)
 
-**[Collection*](#collection*)**
+**[Collection*](#collection)**
 
 *:heavy_exclamation_mark:<b>Important:</b> Note that most native equivalents are array methods,
 and will not work with objects. If this functionality is needed and no object method is provided,
-then Lodash/Underscore is the better option.*
+then Lodash/Underscore might be the better option. Bear in mind however, that all iterable
+objects can easily be converted to an array by use of the
+[spread operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax).*
 
 1. [_.each](#_each)
 1. [_.every](#_every)
@@ -131,6 +136,7 @@ then Lodash/Underscore is the better option.*
 1. [_.range](#_range)
 1. [_.reduce](#_reduce)
 1. [_.reduceRight](#_reduceright)
+1. [_.reject](#_reject)
 1. [_.size](#_size)
 1. [_.some](#_some)
 1. [_.sortBy](#_sortby-and-_orderby)
@@ -141,11 +147,13 @@ then Lodash/Underscore is the better option.*
 1. [_.after](#_after)
 1. [_.bind](#_bind)
 1. [_.debounce](#_debounce)
+1. [_.isFunction](#_isFunction)
 1. [_.partial](#_partial)
 1. [_.throttle](#_throttle)
 
 **[Lang](#lang)**
 
+1. [_.castArray](#_castarray)
 1. [_.gt](#_gt)
 1. [_.gte](#_gte)
 1. [_.isEmpty](#_isempty)
@@ -160,6 +168,7 @@ then Lodash/Underscore is the better option.*
 
 1. [_.assign](#_assign)
 1. [_.extend](#_extend)
+1. [_.has](#_has)
 1. [_.get](#_get)
 1. [_.keys](#_keys)
 1. [_.omit](#_omit)
@@ -170,7 +179,9 @@ then Lodash/Underscore is the better option.*
 
 **[String](#string)**
 
+1. [_.capitalize](#_capitalize)
 1. [_.endsWith](#_endsWith)
+1. [_.isString](#_isString)
 1. [_.padStart and _.padEnd](#_padstart-and-_padend)
 1. [_.repeat](#_repeat)
 1. [_.replace](#_replace)
@@ -182,14 +193,15 @@ then Lodash/Underscore is the better option.*
 1. [_.trim](#_trim)
 1. [_.upperFirst](#_upperFirst)
 
-**[Util](#string)**
+**[Util](#util)**
 
 1. [_.times](#_times)
 
 **[Number](#number)**
 
-1. [_.inRange](#_inRange)
-2. [_.random](#_random)
+1. [_.clamp](#_clamp)
+2. [_.inRange](#_inRange)
+3. [_.random](#_random)
 
 ## Array
 
@@ -488,6 +500,7 @@ Returns the first element of an array. Passing n will return the first n element
   _.first([1, 2, 3, 4, 5]);
   // => 1
 
+  // Underscore
   _.first([1, 2, 3, 4, 5], 2);
   // => [1, 2]
 
@@ -635,6 +648,10 @@ Returns an object composed from key-value pairs.
 
   fromPairs([['a', 1], ['b', 2]]);
   // => { 'a': 1, 'b': 2 }
+
+  // Native(ES2019)
+  Object.fromEntries([['a', 1], ['b', 2]])
+  // => { 'a': 1, 'b': 2 }
   ```
 
 #### Browser Support for `Array.prototype.reduce()`
@@ -642,6 +659,12 @@ Returns an object composed from key-value pairs.
 ![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
 :-: | :-: | :-: | :-: | :-: | :-: |
   ✔  |  ✔ | 3.0 ✔ |  9.0 ✔  |  10.5 ✔ |  4.0 ✔ |
+
+#### Browser Support for `Object.fromEntries()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  73.0 ✔  | 79.0 ✔ | 63.0 ✔ |  ✖  |  60 ✔ |  12.1 ✔ |
 
 **[⬆ back to top](#quick-links)**
 
@@ -859,6 +882,7 @@ Returns the last element of an array. Passing n will return the last n elements 
   _.last(numbers);
   // => 5
 
+  // Underscore
   _.last(numbers, 2);
   // => [4, 5]
 
@@ -991,6 +1015,118 @@ Returns an array where matching items are filtered.
 ![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
 :-: | :-: | :-: | :-: | :-: | :-: |
   1.0 ✔  | ✔ | 1.5 ✔ |  9 ✔ |  ✔ |  ✔  |
+
+**[⬆ back to top](#quick-links)**
+
+### _.initial
+
+Returns everything but the last entry of the array. Pass n to exclude the last n elements from the result.
+
+  ```js
+  // Underscore
+  var array = [5, 4, 3, 2, 1]
+  console.log(_.initial(array, 2))
+  // output: [5, 4, 3]
+
+  // Native
+  var array = [5, 4, 3, 2, 1]
+  console.log(array.slice(0, -2));
+  // output: [5, 4, 3]
+  ```
+
+#### Browser Support for `Array.prototype.slice()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  1.0 ✔  |  ✔  |  1.0 ✔  |  ✔  |  ✔  | ✔  |
+
+**[⬆ back to top](#quick-links)**
+
+### _.pull
+
+Removes all provided values from the given array using strict equality for comparisons, i.e. ===.
+
+  ```js
+  // Lodash
+  var array = [1, 2, 3, 1, 2, 3];
+  _.pull(array, 2, 3);
+  console.log(array)
+  // output: [1, 1]
+  
+  // Native
+  var array = [1, 2, 3, 1, 2, 3];
+  function pull(arr, ...removeList){
+      var removeSet = new Set(removeList) 
+      return arr.filter(function(el){
+          return !removeSet.has(el)
+      })
+  }
+  console.log(pull(array, 2, 3))
+  // output: [1, 1]
+  ```
+
+#### Browser Support for `Array.prototype.filter()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  1.0 ✔  | ✔ | 1.5 ✔ |  9 ✔ |  ✔ |  ✔  |
+
+#### Browser Support for `Set.prototype.has()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image] |
+:-: | :-: | :-: | :-: | :-: | :-: |
+38 ✔ | 12 ✔ | 13 ✔ | 11 ✔ | 25 ✔ | 8 ✔ |
+
+**[⬆ back to top](#quick-links)**
+
+### _.unionBy
+
+Creates an array of unique values, taking an `iteratee` to compute uniqueness with
+(note that to iterate by a key in an object you must use `x => x.key` instead of `key` for the `iteratee`)
+
+  ```js
+  // Lodash
+  var array1 = [2.1];
+  var array2 = [1.2, 2.3];
+  var result = _.unionBy(array1, array2, Math.floor)
+  console.log(result)
+  // output: [2.1, 1.2]
+
+  // Native
+  var array1 = [2.1];
+  var array2 = [1.2, 2.3];
+  function unionBy(...arrays) {
+      const iteratee = (arrays).pop();
+
+      if (Array.isArray(iteratee)) {
+          return []; // return empty if iteratee is missing
+      }
+
+      return [...arrays].flat().filter(
+          (set => (o) => set.has(iteratee(o)) ? false : set.add(iteratee(o)))(new Set()),
+      );
+  };
+  console.log(unionBy(array1, array2, Math.floor))
+  // output: [2.1, 1.2]
+  ```
+
+#### Browser Support for `Array.prototype.flat()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image] |
+:-: | :-: | :-: | :-: | :-: | :-: |
+69 ✔ | ✖ | 62 ✔ | ✖ | 56 ✔ | 12 ✔ |
+
+#### Browser Support for `Array.isArray()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+5.0 ✔  |  ✔  | 4.0 ✔  |  9.0 ✔  |  10.5 ✔  | 5.0 ✔  |
+
+#### Browser Support for `Set.prototype.has()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image] |
+:-: | :-: | :-: | :-: | :-: | :-: |
+38 ✔ | 12 ✔ | 13 ✔ | 11 ✔ | 25 ✔ | 8 ✔ |
 
 **[⬆ back to top](#quick-links)**
 
@@ -1190,9 +1326,9 @@ Creates an object composed of keys generated from the results of running each el
   // Lodash
   console.log(_.keyBy(['a', 'b', 'c']))
   // output: { a: 'a', b: 'b', c: 'c' }
-  console.log(_.keyBy([{ id: 'a1', title: 'abc' }, { id: 'b2', title: 'def' }], 'id')
+  console.log(_.keyBy([{ id: 'a1', title: 'abc' }, { id: 'b2', title: 'def' }], 'id'))
   // output: { a1: { id: 'a1', title: 'abc' }, b2: { id: 'b2', title: 'def' } }
-  console.log(_.keyBy({ data: { id: 'a1', title: 'abc' }}, 'id')
+  console.log(_.keyBy({ data: { id: 'a1', title: 'abc' }}, 'id'))
   // output: { a1: { id: 'a1', title: 'abc' }}
 
   // keyBy for array only
@@ -1201,9 +1337,9 @@ Creates an object composed of keys generated from the results of running each el
   // Native
   console.log(keyBy(['a', 'b', 'c']))
   // output: { a: 'a', b: 'b', c: 'c' }
-  console.log(keyBy([{ id: 'a1', title: 'abc' }, { id: 'b2', title: 'def' }], 'id')
+  console.log(keyBy([{ id: 'a1', title: 'abc' }, { id: 'b2', title: 'def' }], 'id'))
   // output: { a1: { id: 'a1', title: 'abc' }, b2: { id: 'b2', title: 'def' } }
-  console.log(keyBy(Object.values({ data: { id: 'a1', title: 'abc' }}), 'id')
+  console.log(keyBy(Object.values({ data: { id: 'a1', title: 'abc' }}), 'id'))
   // output: { a1: { id: 'a1', title: 'abc' }}
 
   // keyBy for array and object
@@ -1242,6 +1378,30 @@ Translates all items in an array or object to new array of items.
   console.log(array2)
   // output: [2, 4, 6]
   ```
+
+  ```js
+  // Underscore/Lodash
+  var object1 = { 'a': 1, 'b': 2, 'c': 3 }
+  var object2 = _.map(object1, function (value, index) {
+    return value * 2
+  })
+  console.log(object2)
+  // output: [2, 4, 6]
+
+  // Native
+  var object1 = { 'a': 1, 'b': 2, 'c': 3 }
+  var object2 = Object.entries(object1).map(function ([key, value], index) {
+    return value * 2
+  })
+  console.log(object2)
+  // output: [2, 4, 6]
+  ```
+
+#### Browser Support for `Object.entries()` and destructuring
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  ✔  | ✔ | 1.5 ✔ |  ✖ |  ✔ |  ✔ |
 
 #### Browser Support for `Array.prototype.map()`
 
@@ -1430,6 +1590,41 @@ This method is like _.reduce except that it iterates over elements of collection
 ![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
 :-: | :-: | :-: | :-: | :-: | :-: |
   ✔  | ✔ | 3.0 ✔ |  9.0 ✔  |  10.5 ✔ |  4.0 ✔ |
+
+**[⬆ back to top](#quick-links)**
+
+### _.reject
+
+The opposite of _.filter; this method returns the elements of collection that predicate does not return truthy for.
+
+  ```js
+  // Underscore/Lodash
+  var array = [1, 2, 3, 4, 5];
+  var result = _.reject(array, function (x) {
+    return x % 2 === 0;
+  });
+  // output: [1, 3, 5]
+
+  // Native
+  var array = [1, 2, 3, 4, 5];
+  
+  var reject = function (arr, predicate) {
+    var complement = function (f) {
+      return function (x) {
+        return !f(x);
+      }
+    };
+
+    return arr.filter(complement(predicate));
+  };
+  // output: [1, 3, 5]
+  ```
+
+#### Browser Support for `Array.prototype.filter()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  ✔  | 12 ✔ | 1.5 ✔ |  9.0 ✔  |  9.5 ✔ |  3.0 ✔ |
 
 **[⬆ back to top](#quick-links)**
 
@@ -1648,7 +1843,43 @@ Create a new function that calls _func_ with _thisArg_ and _args_.
 
  **[⬆ back to top](#quick-links)**
  
+### _.isFunction
+
+Checks if value is classified as a _Function_ object.
+
+```js
+// Lodash
+_.isFunction(console.log);
+// => true
+
+_.isFunction(/abc/);
+// => false
+
+// Native
+function isFunction(func) {
+  if (func && typeof func === "function") {
+    return true
+  }
+  return false
+}
+
+isFunction(setTimeout);
+// => true
+
+isFunction(123);
+// => false
+```
+
+#### Browser Support
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+ :-: | :-: | :-: | :-: | :-: | :-: |
+ ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
+
+ **[⬆ back to top](#quick-links)**
+ 
 ### _.debounce
+
 Create a new function that calls _func_ with _thisArg_ and _args_.
 
   ```js
@@ -1677,7 +1908,7 @@ jQuery(window).on('resize', debounce(calculateLayout, 150));
 
  **[⬆ back to top](#quick-links)**
  
- 
+
 ### _.partial
 Create a new function that calls _func_ with _args_.
 
@@ -1723,10 +1954,10 @@ Create a new function that limits calls to _func_ to once every given timeframe.
   ```js
   function throttle(func, timeFrame) {
     var lastTime = 0;
-    return function () {
+    return function (...args) {
         var now = new Date();
         if (now - lastTime >= timeFrame) {
-            func();
+            func(...args);
             lastTime = now;
         }
     };
@@ -1746,6 +1977,36 @@ Create a new function that limits calls to _func_ to once every given timeframe.
  
 
 ## Lang
+
+### _.castArray
+
+Puts the value into an array of length one if it is not already an array.
+
+```js
+// Underscore
+console.log(_.castArray(5))
+// output: [5]
+console.log(_.castArray([2]))
+// output: [2]
+
+// Native
+function castArray(arr) {
+  return Array.isArray(arr) ? arr : [arr]
+}
+// output: true
+console.log(castArray(5));
+// output: [5]
+console.log(castArray([2]));
+// output: [2]
+```
+
+#### Browser Support for `Array.isArray()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+5.0 ✔  |  ✔  | 4.0 ✔  |  9.0 ✔  |  10.5 ✔  | 5.0 ✔  |
+
+**[⬆ back to top](#quick-links)**
 
 ### _.gt
 
@@ -1794,33 +2055,34 @@ console.log(3 >= 1);
 ### _.isEmpty
 
 Checks if value is an empty object or collection.
-:heavy_exclamation_mark:`Note this is not evaluating a Set or a Map`
+
+:heavy_exclamation_mark:`Note that the Native version does not support evaluating a Set or a Map`
 
   ```js
   // Lodash
-  console.log(_.isEmpty(null)
+  console.log(_.isEmpty(null))
   // output: true
-  console.log(_.isEmpty('')
+  console.log(_.isEmpty(''))
   // output: true
-  console.log(_.isEmpty({})
+  console.log(_.isEmpty({}))
   // output: true
-  console.log(_.isEmpty([])
+  console.log(_.isEmpty([]))
   // output: true
-  console.log(_.isEmpty({a: '1'})
+  console.log(_.isEmpty({a: '1'}))
   // output: false
 
   // Native
   const isEmpty = obj => [Object, Array].includes((obj || {}).constructor) && !Object.entries((obj || {})).length;
 
-  console.log(isEmpty(null)
+  console.log(isEmpty(null))
   // output: true
-  console.log(isEmpty('')
+  console.log(isEmpty(''))
   // output: true
-  console.log(isEmpty({})
+  console.log(isEmpty({}))
   // output: true
-  console.log(isEmpty([])
+  console.log(isEmpty([]))
   // output: true
-  console.log(isEmpty({a: '1'})
+  console.log(isEmpty({a: '1'}))
   // output: false
   ```
 
@@ -1835,7 +2097,7 @@ Checks if value is an empty object or collection.
 
 ### _.isFinite
 
-Converts value to a finite number.
+Checks if value is a finite primitive number.
 
   ```js
   // Lodash
@@ -2079,11 +2341,17 @@ The method is used to copy the values of all enumerable own and inherited proper
 
   //Or using a function
   const extend = (target, ...sources) => {
-    let source = [];
-    sources.forEach(src => {
-      source = source.concat([src, Object.getPrototypeOf(src)])
-    })
-    return Object.assign(target, ...source)
+   const length = sources.length;
+
+    if (length < 1 || target == null) return target;
+    for (let i = 0; i < length; i++) {
+      const source = sources[i];
+
+      for (const key in source) {
+        target[key] = source[key];
+      }
+    }
+    return target;
   };
   console.log(extend({}, new Foo, new Bar));
   // output: { 'c': 3, 'd': 4, 'e': 5, 'f': 6 }
@@ -2097,10 +2365,51 @@ The method is used to copy the values of all enumerable own and inherited proper
 
  **[⬆ back to top](#quick-links)**
 
+ ### _.has
+
+Checks if `key` is a direct property of `object`. Key may be a path of a value separated by `.`
+
+  ```js
+  // Lodash
+  var object = { a: 1, b: 'settings', c: { d: 'test' } };
+    
+  var hasA = _.has(object, 'a');
+  var hasCWhichHasD = _.has(object, 'c.d')
+
+  console.log(hasA);
+  // output: true
+  console.log(hasCWhichHasD);
+  // output: true
+
+  // Native
+  const has = function (obj, key) {
+    var keyParts = key.split('.');
+
+    return !!obj && (
+      keyParts.length > 1
+        ? has(obj[key.split('.')[0]], keyParts.slice(1).join('.'))
+        : hasOwnProperty.call(obj, key)
+    );
+  };
+  
+  var object = { a: 1, b: 'settings' };
+  var result = has(object, 'a'); 
+  // output: true
+  ```
+
+#### Browser Support for Object .hasOwnProperty
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  ✔  | 12 ✔ |  ✔ |  5.5 ✔ |  5 ✔ |  3 ✔ |
+
+  **[⬆ back to top](#quick-links)**
+
+
  ### _.get
 
 Gets the value at path of object.
-*Note: If provided path does not exists inside the object js will generate error.*
+*Note: If provided path does not exist inside the object js will generate error.*
 
   ```js
   // Lodash
@@ -2111,12 +2420,18 @@ Gets the value at path of object.
 
   // Native (ES6 - IE not supported)
   var object = { a: [{ b: { c: 3 } }] };
-  var { a: [{ b: { c: result2 = 1 } }] } = object;
-  console.log(result2);
+  var { a: [{ b: { c: result = 1 } = {} } = {}] = [] } = object;
+  console.log(result);
+  // output: 3
+
+  // Native (ES11)
+  var object = { a: [{ b: { c: 3 } }] };
+  var result = object?.a?.[0]?.b?.c ?? 1;
+  console.log(result);
   // output: 3
   
   // Native
-  const get = (obj, path, defaultValue) => {
+  const get = (obj, path, defaultValue = undefined) => {
     const travel = regexp =>
       String.prototype.split
         .call(path, regexp)
@@ -2137,6 +2452,18 @@ Gets the value at path of object.
 ![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
 :-: | :-: | :-: | :-: | :-: | :-: |
   49.0 ✔  | 14.0 ✔ |  41.0 ✔ |  ✖  |  41.0 ✔ |  8.0 ✔ |
+
+#### Browser Support for optional chaining `?.`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  80.0 ✔  | 80.0 ✔ |  74.0 ✔ |  ✖  |  67.0 ✔ |  13.1 ✔ |
+
+#### Browser Support for nullish coalescing operator `??`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  80.0 ✔  | 80.0 ✔ |  72.0 ✔ |  ✖  |  ✖ |  13.1 ✔ |
 
   **[⬆ back to top](#quick-links)**
 
@@ -2247,7 +2574,7 @@ Creates an object composed of the object properties predicate returns truthy for
   function pickBy(object) {
       const obj = {};
       for (const key in object) {
-          if (object[key] !== null && object[key] !== false && object[key] !== undefined) {
+          if (object[key]) {
               obj[key] = object[key];
           }
       }
@@ -2317,6 +2644,35 @@ Retrieves all the given object's own enumerable property values.
 
 ## String
 
+### _.capitalize
+
+:heavy_exclamation_mark:`Not in Underscore.js`
+Converts the first character of string to upper case and the remaining to lower case.
+
+  ```js
+  // Lodash
+  var result = _.capitalize('FRED');
+  console.log(result);
+  // => 'Fred'
+
+  // Native
+  const capitalize = (string) => {
+    return string ? string.charAt(0).toUpperCase() + string.slice(1).toLowerCase() : '';
+  };
+
+  var result = capitalize('FRED');
+  console.log(result);
+  // => 'Fred'
+  ```
+
+#### Browser Support
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+ ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
+
+**[⬆ back to top](#quick-links)**
+
 ### _.endsWith
 :heavy_exclamation_mark:`Not in Underscore.js`
 Checks if string ends with the given target string.
@@ -2351,6 +2707,41 @@ Checks if string ends with the given target string.
 
 **[⬆ back to top](#quick-links)**
 
+### _.isString
+
+Checks if value is classified as a String primitive or object.
+
+  ```js
+  // Lodash
+  _.isString('abc');
+  // => true
+ 
+  _.isString(123);
+  // => false
+
+  // Native
+  function isString(str){
+    if (str && typeof str.valueOf() === "string") {
+      return true
+    }
+    return false
+  }
+ 
+  isString('abc');
+  // => true
+ 
+  isString(123);
+  // => false
+  ```
+
+#### Browser Support
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+ ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
+
+**[⬆ back to top](#quick-links)**
+
 ### _.padStart and _.padEnd
 :heavy_exclamation_mark:`Not in Underscore.js`
 Pads the current string with another string (multiple times, if needed) until the resulting string reaches the given length.
@@ -2376,30 +2767,6 @@ Pads the current string with another string (multiple times, if needed) until th
 ![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
 :-: | :-: | :-: | :-: | :-: | :-: |
   57.0 ✔  |  15.0 ✔ | 48.0 ✔ |  ✖  |  44.0 ✔ |  10.0 ✔ |
-
-**[⬆ back to top](#quick-links)**
-
-### _.startsWith
-:heavy_exclamation_mark:`Not in Underscore.js`
-Checks if string starts with the given target string.
-
-  ```js
-  // Lodash
-  var result = _.startsWith('abc', 'b', 1)
-  console.log(result)
-  // output: true
-
-  // Native
-  var result = 'abc'.startsWith('b', 1)
-  console.log(result)
-  // output: true
-  ```
-
-#### Browser Support for `String.prototype.startsWith()`
-
-![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
-:-: | :-: | :-: | :-: | :-: | :-: |
-  41.0 ✔  |  ✔ | 17.0 ✔ |  ✖  |  28.0 ✔ |  9.0 ✔ |
 
 **[⬆ back to top](#quick-links)**
 
@@ -2475,6 +2842,30 @@ Splits string by separator.
 ![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
 :-: | :-: | :-: | :-: | :-: | :-: |
   ✔  | ✔ |  1.0 ✔ |  ✔  | ✔ | ✔ |
+
+**[⬆ back to top](#quick-links)**
+
+### _.startsWith
+:heavy_exclamation_mark:`Not in Underscore.js`
+Checks if string starts with the given target string.
+
+  ```js
+  // Lodash
+  var result = _.startsWith('abc', 'b', 1)
+  console.log(result)
+  // output: true
+
+  // Native
+  var result = 'abc'.startsWith('b', 1)
+  console.log(result)
+  // output: true
+  ```
+
+#### Browser Support for `String.prototype.startsWith()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+  41.0 ✔  |  ✔ | 17.0 ✔ |  ✖  |  28.0 ✔ |  9.0 ✔ |
 
 **[⬆ back to top](#quick-links)**
 
@@ -2577,7 +2968,7 @@ Removes the leading and trailing whitespace characters from a string.
 
 **[⬆ back to top](#quick-links)**
 
-### _.upperFIrst
+### _.upperFirst
 :heavy_exclamation_mark:`Not in Underscore.js`
 Uppercases the first letter of a given string
 
@@ -2662,6 +3053,57 @@ Invokes the iteratee n times, returning an array of the results of each invocati
 **[⬆ back to top](#quick-links)**
 
 ## Number
+
+### _.clamp
+
+Clamps number within the inclusive lower and upper bounds.
+
+```js
+// Lodash
+_.clamp(-10, -5, 5);
+// => -5
+ 
+_.clamp(10, -5, 5);
+// => 5
+
+_.clamp(10, -5);
+// => -5
+
+_.clamp(10, 99);
+// => 10
+
+// Native
+const clamp = (number, boundOne, boundTwo) => {
+  if (!boundTwo) {
+    return Math.max(number, boundOne) === boundOne ? number : boundOne; 
+  } else if (Math.min(number, boundOne) === number) {
+    return boundOne;
+  } else if (Math.max(number, boundTwo) === number) {
+    return boundTwo;
+  }
+  return number;
+};
+
+clamp(-10, -5, 5);
+// => -5
+ 
+clamp(10, -5, 5);
+// => 5
+
+clamp(10, -5);
+// => -5
+
+clamp(10, 99);
+// => 10
+```
+
+#### Browser Support for `Math.min() and Math.max()`
+
+![Chrome][chrome-image] | ![Edge][edge-image] | ![Firefox][firefox-image] | ![IE][ie-image] | ![Opera][opera-image] | ![Safari][safari-image]
+:-: | :-: | :-: | :-: | :-: | :-: |
+✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+
+**[⬆ back to top](#quick-links)**
 
 ### _.inRange
 Checks if n is between start and up to, but not including, end. If end is not specified, it's set to start with start then set to 0. If start is greater than end the params are swapped to support negative ranges.
@@ -2762,6 +3204,7 @@ Produces a random number between the inclusive lower and upper bounds. If only o
   ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 
 **[⬆ back to top](#quick-links)**
+
 
 
 ## Inspired by:

@@ -59,7 +59,6 @@
         "compatible": true,
         "alternative": "Array.isArray()"
     },
-
     "each": {
         "compatible": false,
         "alternative": "Array.prototype.forEach() or Object.entries().forEach()"
@@ -142,7 +141,6 @@
         "compatible": false,
         "alternative": "Array.prototype.slice()"
     },
-
     "bind": {
         "ruleName": "bind",
         "compatible": true,
@@ -179,7 +177,6 @@
         "compatible": true,
         "alternative": "value === undefined"
     },
-
     "keys": {
         "compatible": true,
         "alternative": "Object.keys()"
@@ -213,6 +210,11 @@
         "compatible": true,
         "alternative": "Object.entries()",
         "ES6": true
+    },
+    "get": {
+        "compatible": false,
+        "alternative": "optional chaining to get nested values and nullish coalescing operator for fallback values",
+        "ES11": true
     },
     "split": {
         "compatible": true,
@@ -270,11 +272,32 @@
         "ES6": true
     },
     "flatten": {
-    	"compatible": true,
-    	"alternative": "Array.prototype.reduce((a,b) => a.concat(b), [])"
+        "compatible": true,
+        "alternative": "Array.prototype.reduce((a,b) => a.concat(b), [])"
     },
     "throttle": {
         "compatible": true,
         "alternative": "Example of native implementation: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_throttle"
+    },
+    "isString": {
+        "compatible": true,
+        "alternative": "str && typeof str.valueOf() === \"string\""
+    },
+    "castArray": {
+        "compatible": true,
+        "alternative": "Array.isArray(arr) ? arr : [arr]"
+    },
+    "isFunction": {
+        "compatible": true,
+        "alternative": "typeof func === \"function\""
+    },
+    "unionBy": {
+        "compatible": false,
+        "alternative": "Example of native implementation: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_unionBy",
+        "ES10": true
+    },
+    "capitalize": {
+        "compatible": true,
+        "alternative": "string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()"
     }
 }
